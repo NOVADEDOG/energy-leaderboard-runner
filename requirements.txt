@@ -1,0 +1,20 @@
+# CLI framework
+typer>=0.9.0
+
+# LLM integrations
+ollama>=0.1.6
+
+# Data validation
+pydantic>=2.0.0
+
+# JSON schema validation
+jsonschema>=4.20.0
+
+# For NVIDIA GPU monitoring (Linux/Windows with Docker)
+nvidia-ml-py>=12.560.30
+
+# For better terminal output
+rich>=13.7.0
+
+# For OpenAI-compatible APIs
+openai>=1.0.0

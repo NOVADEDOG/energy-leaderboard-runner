@@ -1,0 +1,195 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Energy Metrics Result Schema",
+    "description": "Schema for validating energy measurement results from LLM benchmarks",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": [
+            "tokens_prompt",
+            "tokens_completion",
+            "duration_s",
+            "response_time_s",
+            "energy_wh_raw",
+            "energy_wh_net",
+            "wh_per_1k_tokens",
+            "energy_kwh_per_token",
+            "g_co2",
+            "provider",
+            "model",
+            "region",
+            "notice",
+            "sampling_ms",
+            "device_name",
+            "device_type",
+            "os_name",
+            "os_version"
+        ],
+        "properties": {
+            "tokens_prompt": {
+                "type": "integer",
+                "description": "Number of tokens in the input prompt",
+                "minimum": 0
+            },
+            "tokens_completion": {
+                "type": "integer",
+                "description": "Number of tokens in the generated completion",
+                "minimum": 0
+            },
+            "duration_s": {
+                "type": "number",
+                "description": "Total duration of the entire process in seconds",
+                "minimum": 0
+            },
+            "response_time_s": {
+                "type": "number",
+                "description": "Time for LLM to generate response in seconds",
+                "minimum": 0
+            },
+            "energy_wh_raw": {
+                "type": "number",
+                "description": "Raw energy consumption in watt-hours",
+                "minimum": 0
+            },
+            "energy_wh_net": {
+                "type": "number",
+                "description": "Net energy consumption in watt-hours (after adjustments)",
+                "minimum": 0
+            },
+            "wh_per_1k_tokens": {
+                "type": "number",
+                "description": "Energy consumption per 1000 tokens",
+                "minimum": 0
+            },
+            "energy_kwh_per_token": {
+                "type": "number",
+                "description": "Energy consumption in kWh per single token",
+                "minimum": 0
+            },
+            "g_co2": {
+                "type": "number",
+                "description": "CO2 emissions in grams",
+                "minimum": 0
+            },
+            "provider": {
+                "type": "string",
+                "description": "LLM provider name (e.g., 'ollama')"
+            },
+            "model": {
+                "type": "string",
+                "description": "Model identifier"
+            },
+            "region": {
+                "type": "string",
+                "description": "Region or grid zone for CO2 calculations"
+            },
+            "notice": {
+                "type": [
+                    "string",
+                    "null"
+                ],
+                "description": "Optional notice or warning message"
+            },
+            "sampling_ms": {
+                "type": "integer",
+                "description": "Sampling interval in milliseconds",
+                "minimum": 1
+            },
+            "device_name": {
+                "type": "string",
+                "description": "Human-readable device name (e.g., 'Apple M1 MacBook Air', 'Linux with NVIDIA RTX 4090')"
+            },
+            "device_type": {
+                "type": "string",
+                "enum": [
+                    "apple",
+                    "nvidia",
+                    "amd",
+                    "intel",
+                    "unknown"
+                ],
+                "description": "Device category for filtering and comparison"
+            },
+            "os_name": {
+                "type": "string",
+                "description": "Operating system name (e.g., 'macOS', 'Linux', 'Windows')"
+            },
+            "os_version": {
+                "type": "string",
+                "description": "Operating system version"
+            },
+            "cpu_model": {
+                "type": "string",
+                "description": "CPU model string (optional)"
+            },
+            "gpu_model": {
+                "type": "string",
+                "description": "GPU model string if applicable (optional)"
+            },
+            "ram_gb": {
+                "type": "number",
+                "description": "Total system RAM in gigabytes (optional)",
+                "minimum": 0
+            },
+            "chip_architecture": {
+                "type": "string",
+                "description": "CPU architecture (e.g., 'arm64', 'x86_64')"
+            },
+            "prompt": {
+                "type": "string",
+                "description": "The input prompt text"
+            },
+            "completion": {
+                "type": "string",
+                "description": "The generated completion text"
+            },
+            "testset_id": {
+                "type": "string",
+                "description": "Identifier of the testset definition"
+            },
+            "testset_name": {
+                "type": "string",
+                "description": "Human readable testset name"
+            },
+            "testset_goal": {
+                "type": "string",
+                "description": "Benchmark goal or guidance for this testset"
+            },
+            "testset_notes": {
+                "type": "string",
+                "description": "Experimenter notes captured from the testset file"
+            },
+            "question_id": {
+                "type": "string",
+                "description": "Unique identifier for the question"
+            },
+            "question_difficulty": {
+                "type": "string",
+                "description": "Difficulty label provided by the testset"
+            },
+            "question_task_type": {
+                "type": "string",
+                "description": "Task type (qa, reasoning, summarization, etc.)"
+            },
+            "expected_answer_description": {
+                "type": "string",
+                "description": "Short description of the target answer"
+            },
+            "max_output_tokens_hint": {
+                "type": "integer",
+                "description": "Suggested upper bound for completion length"
+            },
+            "energy_relevance": {
+                "type": "string",
+                "description": "Explanation of why the question matters for energy analysis"
+            },
+            "tags": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "description": "List of tags defined by the testset"
+            }
+        }
+    }
+}

@@ -1,0 +1,148 @@
+{
+  "id": "ts2",
+  "name": "Moderate reasoning and explanation tasks",
+  "goal": "Assess mid‑range energy consumption by requiring the model to produce multi‑sentence explanations or summaries.",
+  "notes_for_experimenter": "These prompts demand short reasoning chains and descriptive answers. They will produce longer outputs than the easy baseline but remain within a few sentences. Compare energy per response across models and look for correlations with output length as identified in research.",
+  "questions": [
+    {
+      "id": "ts2_q1",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Explain how a rainbow forms in the sky.",
+      "expected_answer_description": "A 2–3 sentence explanation mentioning sunlight, refraction, dispersion in water droplets and the separation of light into colors.",
+      "max_output_tokens_hint": 60,
+      "energy_relevance": "Requires a coherent scientific explanation; output length and reasoning depth moderately increase energy use.",
+      "tags": [
+        "science",
+        "explanation",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q2",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Describe the life cycle of a butterfly in two or three sentences.",
+      "expected_answer_description": "Briefly mentions stages: egg, caterpillar (larva), chrysalis (pupa) and adult butterfly.",
+      "max_output_tokens_hint": 60,
+      "energy_relevance": "Moderate reasoning with ordered steps; tests energy usage for multi‑sentence biological descriptions.",
+      "tags": [
+        "biology",
+        "sequencing",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q3",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Why do we observe different phases of the Moon from Earth?",
+      "expected_answer_description": "Explains that phases result from the Moon’s orbit around Earth and the relative positions of Earth, Moon and Sun causing varying illuminated portions to be visible.",
+      "max_output_tokens_hint": 70,
+      "energy_relevance": "Requires causal reasoning and 2–3 sentences; moderate energy consumption.",
+      "tags": [
+        "astronomy",
+        "explanation",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q4",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Explain the difference between renewable and non‑renewable energy sources.",
+      "expected_answer_description": "Defines renewable energy (e.g., solar, wind) as replenished naturally and non‑renewable (e.g., coal, oil) as finite and depleting; may mention environmental impacts.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Moderate complexity, encourages short comparison; output length influences energy usage.",
+      "tags": [
+        "energy",
+        "comparison",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q5",
+      "difficulty": "medium",
+      "task_type": "summarization",
+      "prompt": "Summarize the following story in one or two sentences: A young girl plants a seed in her backyard. She waters it every day and watches it grow into a beautiful tree that provides shade for her family during hot summers.",
+      "expected_answer_description": "Condenses the narrative to key events (girl plants a seed, cares for it, it grows into a tree that benefits her family).",
+      "max_output_tokens_hint": 60,
+      "energy_relevance": "Tests summarization ability with short narrative; moderate output length and reasoning.",
+      "tags": [
+        "summarization",
+        "story",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q6",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Why are some metals magnetic while others are not?",
+      "expected_answer_description": "Discusses electron alignment and the presence of unpaired electrons in metals like iron, cobalt and nickel that allow magnetic domains to form, whereas other metals lack such structure.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Moderate scientific explanation requiring conceptual reasoning; influences energy use.",
+      "tags": [
+        "physics",
+        "magnetism",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q7",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Describe how photosynthesis works, focusing on the role of chlorophyll.",
+      "expected_answer_description": "Mentions that plants use chlorophyll to absorb sunlight, convert carbon dioxide and water into glucose and oxygen during the light‑dependent and Calvin cycle stages.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Requires explanation of a biochemical process; moderate length and reasoning.",
+      "tags": [
+        "biology",
+        "photosynthesis",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q8",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Explain the concept of supply and demand in economics.",
+      "expected_answer_description": "Describes how price levels are determined by the quantity of goods available and the desire of consumers, with examples of supply increases lowering prices and demand increases raising prices.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Economic reasoning with illustrative example; moderate complexity and output.",
+      "tags": [
+        "economics",
+        "explanation",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q9",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Why do seasons change on Earth?",
+      "expected_answer_description": "Explains that Earth’s axial tilt and its orbit around the Sun cause varying sunlight angles and day lengths, leading to seasonal changes.",
+      "max_output_tokens_hint": 70,
+      "energy_relevance": "Geoscience explanation with causal reasoning; moderate energy use.",
+      "tags": [
+        "earth-science",
+        "explanation",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts2_q10",
+      "difficulty": "medium",
+      "task_type": "reasoning",
+      "prompt": "Describe the process of cellular respiration in simple terms.",
+      "expected_answer_description": "Mentions that cells convert glucose and oxygen into energy (ATP), carbon dioxide and water through glycolysis, the Krebs cycle and electron transport chain.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Requires multi‑step biological explanation; moderate output length.",
+      "tags": [
+        "biology",
+        "metabolism",
+        "medium-output"
+      ]
+    }
+  ]
+}

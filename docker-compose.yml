@@ -1,0 +1,17 @@
+services:
+  energy-leaderboard:
+    image: energy-leaderboard-runner
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - CO2_INTENSITY_G_KWH=350.0
+      - REGION=unknown
+      - SAMPLING_INTERVAL_MS=100
+    volumes:
+      - ./results:/app/results
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

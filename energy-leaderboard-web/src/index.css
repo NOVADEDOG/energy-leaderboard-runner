@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar for dark mode */
+@layer base {
+    :root {
+        --eco-500: #84C6A3;
+    }
+
+    /* Smooth transitions for theme switching */
+    html {
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-gray-100 dark:bg-dark-surface;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-400 dark:bg-gray-500;
+    }
+}
+
+@layer components {
+    .card {
+        @apply bg-white dark:bg-dark-surface rounded-xl shadow-sm border border-gray-200 dark:border-dark-border;
+    }
+
+    .btn {
+        @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-eco-500 focus:ring-offset-2 dark:focus:ring-offset-dark-bg;
+    }
+
+    .btn-primary {
+        @apply btn bg-eco-500 text-white hover:bg-eco-600 active:bg-eco-700;
+    }
+
+    .btn-secondary {
+        @apply btn bg-gray-100 dark:bg-dark-border text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600;
+    }
+
+    .input {
+        @apply w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-eco-500 focus:border-transparent transition-colors;
+    }
+
+    .select {
+        @apply input appearance-none cursor-pointer pr-10;
+    }
+
+    /* Table styles */
+    .table-header {
+        @apply text-left text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider;
+    }
+
+    .table-cell {
+        @apply px-4 py-3 text-sm text-gray-900 dark:text-gray-100;
+    }
+
+    .table-row {
+        @apply border-b border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes pulse-eco {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.animate-pulse-eco {
+    animation: pulse-eco 2s ease-in-out infinite;
+}

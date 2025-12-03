@@ -1,0 +1,149 @@
+{
+  "id": "ts3",
+  "name": "Hard multi‑step reasoning and coding tasks",
+  "goal": "Stress energy consumption by requiring chain‑of‑thought reasoning, combinatorial calculations or code generation.",
+  "notes_for_experimenter": "These tasks involve multiple reasoning steps or small code snippets. They produce longer answers and encourage the model to maintain internal state, which should increase energy usage as suggested by research linking output length and complexity to energy. When measuring, ensure the model is allowed to think step by step but cap output tokens if necessary.",
+  "questions": [
+    {
+      "id": "ts3_q1",
+      "difficulty": "hard",
+      "task_type": "reasoning",
+      "prompt": "Given the sequence of prime numbers 2, 3, 5, 7, 11, 13, what are the next two primes? Explain how you determined them.",
+      "expected_answer_description": "Identifies 17 and 19 as the next primes and provides a brief explanation of checking successive integers for divisibility.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Requires enumeration and explanation; output longer than factual answer.",
+      "tags": [
+        "math",
+        "primes",
+        "chain-of-thought",
+        "high-output"
+      ]
+    },
+    {
+      "id": "ts3_q2",
+      "difficulty": "hard",
+      "task_type": "reasoning",
+      "prompt": "Calculate the sum of all even numbers between 1 and 50 inclusive. Show your reasoning.",
+      "expected_answer_description": "Shows that the even numbers form an arithmetic series (2+4+…+50), calculates the number of terms (25) and uses the formula to obtain a sum of 650.",
+      "max_output_tokens_hint": 90,
+      "energy_relevance": "Requires multiple steps (series identification and summation) and explanation, increasing compute and output length.",
+      "tags": [
+        "math",
+        "arithmetic-series",
+        "chain-of-thought"
+      ]
+    },
+    {
+      "id": "ts3_q3",
+      "difficulty": "hard",
+      "task_type": "reasoning",
+      "prompt": "You have five marbles—red, green, blue, yellow and purple. In how many different orders can you arrange these marbles? Explain your reasoning.",
+      "expected_answer_description": "Recognizes this as a permutation problem; calculates 5! = 120 possible arrangements and explains the factorial reasoning.",
+      "max_output_tokens_hint": 90,
+      "energy_relevance": "Combinatorial reasoning with explanation increases token count and energy consumption.",
+      "tags": [
+        "combinatorics",
+        "factorial",
+        "chain-of-thought"
+      ]
+    },
+    {
+      "id": "ts3_q4",
+      "difficulty": "hard",
+      "task_type": "coding",
+      "prompt": "Write a Python function named factorial that takes a positive integer n and returns n factorial.",
+      "expected_answer_description": "Provides a syntactically valid Python function using recursion or a loop to compute the factorial.",
+      "max_output_tokens_hint": 120,
+      "energy_relevance": "Generates executable code; output length and structure require more tokens and compute.",
+      "tags": [
+        "python",
+        "function",
+        "code-generation"
+      ]
+    },
+    {
+      "id": "ts3_q5",
+      "difficulty": "hard",
+      "task_type": "reasoning",
+      "prompt": "Solve the following logic puzzle: Three houses in a row are colored red, blue and green. The doctor lives in the red house. The teacher lives next to the green house. The artist does not live next to the doctor. Who lives in each colored house? Provide your reasoning.",
+      "expected_answer_description": "Determines that the red house must be at one end; concludes that the doctor lives in the red house at one end, the teacher occupies the middle (blue) house to be adjacent to green, and the artist lives in the green house at the other end. The reasoning explains why other arrangements violate the clues.",
+      "max_output_tokens_hint": 130,
+      "energy_relevance": "Requires logical deduction and explanation of possibilities, leading to longer, multi‑sentence output.",
+      "tags": [
+        "logic-puzzle",
+        "deduction",
+        "chain-of-thought"
+      ]
+    },
+    {
+      "id": "ts3_q6",
+      "difficulty": "hard",
+      "task_type": "translation",
+      "prompt": "Translate the sentence ‘The quick brown fox jumps over the lazy dog’ into French.",
+      "expected_answer_description": "Produces a grammatically correct French translation equivalent to the original pangram (‘Le rapide renard brun saute par-dessus le chien paresseux’).",
+      "max_output_tokens_hint": 40,
+      "energy_relevance": "Although the output is short, translation engages language modelling and cross‑lingual mapping, slightly increasing compute compared to factual Q&A.",
+      "tags": [
+        "translation",
+        "language",
+        "moderate-length"
+      ]
+    },
+    {
+      "id": "ts3_q7",
+      "difficulty": "hard",
+      "task_type": "coding",
+      "prompt": "Given the list [1, 2, 3, 4, 5], write a Python code snippet that calculates the average of the numbers.",
+      "expected_answer_description": "Produces Python code that sums the list elements and divides by the number of elements to obtain 3.0.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Code generation with multiple lines and variables; tests coding ability and increases energy usage.",
+      "tags": [
+        "python",
+        "code-snippet",
+        "math"
+      ]
+    },
+    {
+      "id": "ts3_q8",
+      "difficulty": "hard",
+      "task_type": "reasoning",
+      "prompt": "A car travels 60 km at 30 km/h and then 40 km at 20 km/h. What is the average speed for the entire trip? Show your calculations.",
+      "expected_answer_description": "Computes total distance (100 km), calculates travel times for each segment (2 hours and 2 hours) and divides total distance by total time to get 25 km/h.",
+      "max_output_tokens_hint": 90,
+      "energy_relevance": "Requires multiple calculations and explanation; longer reasoning chain increases energy.",
+      "tags": [
+        "physics",
+        "average-speed",
+        "chain-of-thought"
+      ]
+    },
+    {
+      "id": "ts3_q9",
+      "difficulty": "hard",
+      "task_type": "reasoning",
+      "prompt": "In three sentences, evaluate the pros and cons of electric cars.",
+      "expected_answer_description": "Discusses advantages (lower emissions, quiet operation, lower operating costs) and disadvantages (limited range, charging infrastructure, battery production impacts).",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Generates a balanced argument; multi‑sentence response with reasoning increases energy use.",
+      "tags": [
+        "analysis",
+        "pros-cons",
+        "environment"
+      ]
+    },
+    {
+      "id": "ts3_q10",
+      "difficulty": "hard",
+      "task_type": "reasoning",
+      "prompt": "Given the formula for the area of a circle, A = πr², derive the area when the radius is doubled and explain by what factor the area increases.",
+      "expected_answer_description": "Shows that doubling r gives area π(2r)² = 4πr²; explains that the area increases by a factor of four.",
+      "max_output_tokens_hint": 70,
+      "energy_relevance": "Mathematical derivation with explanation; moderate to long output influences energy consumption.",
+      "tags": [
+        "geometry",
+        "derivation",
+        "chain-of-thought"
+      ]
+    }
+  ]
+}

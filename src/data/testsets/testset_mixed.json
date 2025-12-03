@@ -1,0 +1,148 @@
+{
+  "id": "ts4",
+  "name": "Mixed task suite (realistic workload)",
+  "goal": "Provide a mixture of reasoning, summarization, classification, translation and code tasks to emulate a real‑world workload and observe how different operations affect energy consumption.",
+  "notes_for_experimenter": "This set mixes short and long prompts, structured outputs and creative tasks. Use it to test energy consumption under varied workloads. Track tokens per joule and compare models across task types, as recommended by research on tokens/J metrics.",
+  "questions": [
+    {
+      "id": "ts4_q1",
+      "difficulty": "mixed",
+      "task_type": "summarization",
+      "prompt": "Summarize the following paragraph in two sentences: Artificial intelligence is a field that has seen rapid growth in the past decade. With the advent of deep learning, machines can now perform tasks such as image recognition, language translation, and even creative writing.",
+      "expected_answer_description": "Condenses the paragraph to two sentences mentioning AI’s rapid growth and its applications like image recognition, translation and creative tasks.",
+      "max_output_tokens_hint": 60,
+      "energy_relevance": "Moderate summarization; tests energy usage for condensing information.",
+      "tags": [
+        "summarization",
+        "mixed",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts4_q2",
+      "difficulty": "mixed",
+      "task_type": "reasoning",
+      "prompt": "Generate a short paragraph (50–70 words) describing a fictional planet with two suns.",
+      "expected_answer_description": "Creates a descriptive paragraph about a made‑up planet orbiting two stars, mentioning environmental features such as double shadows, long days or unique ecosystems.",
+      "max_output_tokens_hint": 100,
+      "energy_relevance": "Creative generation with word‑count constraint; longer output increases energy.",
+      "tags": [
+        "creative-writing",
+        "description",
+        "long-output"
+      ]
+    },
+    {
+      "id": "ts4_q3",
+      "difficulty": "mixed",
+      "task_type": "coding",
+      "prompt": "Write a JSON object with keys ‘name’, ‘age’ and ‘favorite_color’ representing a fictional character of your choice.",
+      "expected_answer_description": "Returns a valid JSON object with three key–value pairs, e.g., {\"name\": \"Alex\", \"age\": 28, \"favorite_color\": \"green\"}.",
+      "max_output_tokens_hint": 30,
+      "energy_relevance": "Structured output generation; tests the model’s ability to follow formatting instructions.",
+      "tags": [
+        "json",
+        "structured-output",
+        "short"
+      ]
+    },
+    {
+      "id": "ts4_q4",
+      "difficulty": "mixed",
+      "task_type": "classification",
+      "prompt": "Classify the following items as ‘fruit’ or ‘vegetable’: apple, carrot, banana, broccoli, tomato. Return your answer as a list of pairs [item, type].",
+      "expected_answer_description": "Produces a list of pairs indicating fruit or vegetable classifications, e.g., [[\"apple\", \"fruit\"], …].",
+      "max_output_tokens_hint": 60,
+      "energy_relevance": "Requires producing a structured list and mapping categories; moderate reasoning and output length.",
+      "tags": [
+        "classification",
+        "list",
+        "structured-output"
+      ]
+    },
+    {
+      "id": "ts4_q5",
+      "difficulty": "mixed",
+      "task_type": "translation",
+      "prompt": "Translate this recipe step into Spanish: ‘Chop the onions finely and sauté them in olive oil until golden brown.’",
+      "expected_answer_description": "Provides a grammatically correct Spanish translation of the cooking instruction.",
+      "max_output_tokens_hint": 40,
+      "energy_relevance": "Short translation task; tests cross‑lingual capability with moderate compute.",
+      "tags": [
+        "translation",
+        "cooking",
+        "short"
+      ]
+    },
+    {
+      "id": "ts4_q6",
+      "difficulty": "mixed",
+      "task_type": "coding",
+      "prompt": "Given the numbers [4, 9, 16, 25], write a Python list comprehension to compute their square roots.",
+      "expected_answer_description": "Returns a one‑line Python list comprehension that applies math.sqrt or exponent 0.5 to each number.",
+      "max_output_tokens_hint": 50,
+      "energy_relevance": "Generates code; tests ability to produce correct syntax and moderate output.",
+      "tags": [
+        "python",
+        "list-comprehension",
+        "code"
+      ]
+    },
+    {
+      "id": "ts4_q7",
+      "difficulty": "mixed",
+      "task_type": "other",
+      "prompt": "Write a haiku (three lines with syllable pattern 5–7–5) about the changing seasons.",
+      "expected_answer_description": "Produces a three‑line haiku observing the 5‑7‑5 syllable structure and referencing seasonal change.",
+      "max_output_tokens_hint": 40,
+      "energy_relevance": "Creative poetry requires the model to track syllable counts; moderate compute despite short length.",
+      "tags": [
+        "poetry",
+        "creative",
+        "short"
+      ]
+    },
+    {
+      "id": "ts4_q8",
+      "difficulty": "mixed",
+      "task_type": "summarization",
+      "prompt": "State the moral of Aesop’s fable ‘The Tortoise and the Hare’ in one sentence.",
+      "expected_answer_description": "Summarizes the moral (steady effort and perseverance often outperform careless speed).",
+      "max_output_tokens_hint": 25,
+      "energy_relevance": "Short summarization; tests ability to capture key lesson succinctly.",
+      "tags": [
+        "fable",
+        "moral",
+        "short"
+      ]
+    },
+    {
+      "id": "ts4_q9",
+      "difficulty": "mixed",
+      "task_type": "reasoning",
+      "prompt": "Explain what a binary search algorithm does in two sentences.",
+      "expected_answer_description": "Describes that binary search repeatedly divides a sorted list to locate a target value by comparing the target to the middle element and narrowing the search interval.",
+      "max_output_tokens_hint": 60,
+      "energy_relevance": "Algorithm description requires concise reasoning; moderate output length.",
+      "tags": [
+        "computer-science",
+        "algorithm",
+        "medium-output"
+      ]
+    },
+    {
+      "id": "ts4_q10",
+      "difficulty": "mixed",
+      "task_type": "coding",
+      "prompt": "Given the string ‘hello world’, write pseudocode or simple code to reverse the string and briefly explain your approach.",
+      "expected_answer_description": "Provides pseudocode or a short function that iterates over the characters or uses slicing to reverse the string and explains the method.",
+      "max_output_tokens_hint": 80,
+      "energy_relevance": "Combines code and explanation; increases output length and tests multi‑modal reasoning.",
+      "tags": [
+        "coding",
+        "string-manipulation",
+        "explanation"
+      ]
+    }
+  ]
+}
