@@ -73,9 +73,9 @@ class RocmSmiMeter(EnergyMeter):
             try:
                 # Run rocm-smi to get power usage
                 # -d: device index
-                # -p: show power consumption
+                # --showpower: show current power consumption
                 result = subprocess.run(
-                    ["rocm-smi", "-d", str(self.device_index), "-p"],
+                    ["rocm-smi", "-d", str(self.device_index), "--showpower"],
                     capture_output=True,
                     text=True,
                     timeout=1.0,
@@ -102,9 +102,12 @@ class RocmSmiMeter(EnergyMeter):
         Returns:
             Power in watts, or None if parsing fails.
         """
-        # Look for patterns like "Average Graphics Package Power: 123.45 W"
-        # or "Power: 123 W"
+        # Look for patterns like:
+        # "Current Socket Graphics Package Power (W): 4.052"
+        # "Average Graphics Package Power: 123.45 W"
+        # "Power: 123 W"
         patterns = [
+            r"Current Socket Graphics Package Power \(W\):\s+([\d.]+)",
             r"Average Graphics Package Power:\s+([\d.]+)\s*W",
             r"Power:\s+([\d.]+)\s*W",
             r"GPU Power:\s+([\d.]+)\s*W",
