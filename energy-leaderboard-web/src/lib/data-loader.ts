@@ -79,6 +79,55 @@ export function detectDeviceType(result: BenchmarkResult, filename: string): Dev
 }
 
 /**
+ * Normalize model name for grouping across providers/software
+ * Strips file extensions (.gguf), version suffixes, and standardizes separators
+ * Examples:
+ *   - "gpt-oss-20b-MXFP4.gguf" -> "gpt-oss-20b"
+ *   - "gpt-oss:20b" -> "gpt-oss-20b"
+ *   - "gpt-oss-120b-MXFP4-00001-of-00002.gguf" -> "gpt-oss-120b"
+ *   - "llama3.2:3b-instruct-q4_k_m" -> "llama3.2-3b" (keeps base model)
+ */
+export function normalizeModelName(model: string): string {
+    let normalized = model;
+    
+    // Remove file extensions
+    normalized = normalized.replace(/\.(gguf|bin|safetensors)$/i, '');
+    
+    // Remove shard indicators (e.g., "-00001-of-00002")
+    normalized = normalized.replace(/-\d{5}-of-\d{5}$/i, '');
+    
+    // Remove quantization/format suffixes (e.g., "-MXFP4", "-Q4_K_M", "-q4_k_m")
+    normalized = normalized.replace(/[-_](MXFP\d|Q\d[_A-Z]*\d*[_A-Z]*)$/i, '');
+    
+    // Standardize separator: "model:size" -> "model-size"
+    normalized = normalized.replace(/:/g, '-');
+    
+    // Remove instruct/chat suffixes for base model grouping (optional, keeps instruct for now)
+    // normalized = normalized.replace(/-instruct|-chat$/i, '');
+    
+    // Lowercase for consistent grouping
+    normalized = normalized.toLowerCase();
+    
+    return normalized;
+}
+
+/**
+ * Get a display-friendly model name from the raw model string
+ */
+export function getDisplayModelName(model: string): string {
+    // Clean up the model name for display (less aggressive than normalize)
+    let display = model;
+    
+    // Remove file extensions
+    display = display.replace(/\.(gguf|bin|safetensors)$/i, '');
+    
+    // Remove shard indicators
+    display = display.replace(/-\d{5}-of-\d{5}$/i, '');
+    
+    return display;
+}
+
+/**
  * Determine if results are from real power measurements or estimated
  * Real measurements have sampling_ms and typically more accurate energy data
  */
@@ -212,7 +261,8 @@ export function aggregateByModel(
 
 /**
  * Aggregate benchmark results by model only (cross-hardware average)
- * This creates one entry per model, averaging across all hardware types
+ * This creates one entry per model, averaging across all hardware types AND providers
+ * Models are normalized to group variants like "gpt-oss-20b" and "gpt-oss-20b-MXFP4.gguf"
  */
 export function aggregateByModelOnly(
     benchmarks: { filename: string; results: BenchmarkRun }[]
@@ -222,20 +272,24 @@ export function aggregateByModelOnly(
         filenames: Set<string>;
         testsets: Set<string>;
         deviceTypes: Set<DeviceType>;
+        providers: Set<string>;
+        rawModelNames: Set<string>;
     }>();
 
-    // Group results by model + provider only (ignore device)
+    // Group results by normalized model name only (ignore device AND provider)
     for (const { filename, results } of benchmarks) {
         for (const result of results) {
             const deviceType = detectDeviceType(result, filename);
-            const key = `${result.model}__${result.provider}`;
+            const key = normalizeModelName(result.model);
 
             if (!modelMap.has(key)) {
                 modelMap.set(key, {
                     results: [],
                     filenames: new Set(),
                     testsets: new Set(),
-                    deviceTypes: new Set()
+                    deviceTypes: new Set(),
+                    providers: new Set(),
+                    rawModelNames: new Set()
                 });
             }
 
@@ -243,6 +297,8 @@ export function aggregateByModelOnly(
             group.results.push(result);
             group.filenames.add(filename);
             group.deviceTypes.add(deviceType);
+            group.providers.add(result.provider);
+            group.rawModelNames.add(result.model);
 
             if (result.testset_name) {
                 group.testsets.add(result.testset_name);
@@ -253,10 +309,20 @@ export function aggregateByModelOnly(
     // Calculate aggregated stats for each model
     const stats: ModelStats[] = [];
 
-    for (const [, { results, testsets, deviceTypes }] of modelMap) {
+    for (const [, { results, testsets, deviceTypes, providers, rawModelNames }] of modelMap) {
         const firstResult = results[0];
-        const model = firstResult.model;
-        const provider = firstResult.provider;
+        // Use the shortest/cleanest raw model name for display, or the normalized name
+        const rawNamesArray = Array.from(rawModelNames);
+        const model = getDisplayModelName(
+            rawNamesArray.reduce((shortest, name) => 
+                getDisplayModelName(name).length < getDisplayModelName(shortest).length ? name : shortest
+            )
+        );
+        // Show all providers used
+        const providerArray = Array.from(providers).sort();
+        const provider = providerArray.length > 1 
+            ? providerArray.join(', ') 
+            : providerArray[0];
         const region = firstResult.region;
 
         // Calculate weighted average efficiency (Total Energy / Total Tokens)
