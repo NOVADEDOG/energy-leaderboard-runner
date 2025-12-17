@@ -88,7 +88,7 @@ interface DeviceBadgeProps {
  */
 export function DeviceBadge({ device }: DeviceBadgeProps) {
     const deviceStyles: Record<string, string> = {
-        'Apple Silicon': 'bg-gray-800 text-white',
+        'Apple Silicon': 'bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800',
         'NVIDIA GPU': 'bg-green-600 text-white',
         'AMD GPU': 'bg-red-600 text-white',
         'Intel CPU': 'bg-blue-600 text-white',
@@ -111,11 +111,11 @@ interface DevicesBadgeProps {
  */
 export function DevicesBadge({ devices }: DevicesBadgeProps) {
     const deviceColors: Record<DeviceType, string> = {
-        'apple': 'bg-gray-800',
-        'nvidia': 'bg-green-600',
-        'amd': 'bg-red-600',
-        'intel': 'bg-blue-600',
-        'unknown': 'bg-gray-400',
+        'apple': 'bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800',
+        'nvidia': 'bg-green-600 text-white',
+        'amd': 'bg-red-600 text-white',
+        'intel': 'bg-blue-600 text-white',
+        'unknown': 'bg-gray-400 text-white',
     };
 
     const deviceLabels: Record<DeviceType, string> = {
@@ -131,7 +131,7 @@ export function DevicesBadge({ devices }: DevicesBadgeProps) {
             {devices.map((device) => (
                 <span 
                     key={device}
-                    className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium text-white ${deviceColors[device]}`}
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${deviceColors[device]}`}
                     title={device}
                 >
                     {deviceLabels[device]}
