@@ -19,7 +19,10 @@ export async function loadAllBenchmarks(): Promise<{ filename: string; results: 
             console.warn('Failed to load manifest.json, falling back to empty list');
             return [];
         }
-        const files: string[] = await manifestResponse.json();
+        const manifest = await manifestResponse.json();
+
+        // Support both old array format and new object format with metadata
+        const files: string[] = Array.isArray(manifest) ? manifest : manifest.files || [];
 
         const loadPromises = files.map(async (filename) => {
             try {
@@ -89,25 +92,25 @@ export function detectDeviceType(result: BenchmarkResult, filename: string): Dev
  */
 export function normalizeModelName(model: string): string {
     let normalized = model;
-    
+
     // Remove file extensions
     normalized = normalized.replace(/\.(gguf|bin|safetensors)$/i, '');
-    
+
     // Remove shard indicators (e.g., "-00001-of-00002")
     normalized = normalized.replace(/-\d{5}-of-\d{5}$/i, '');
-    
+
     // Remove quantization/format suffixes (e.g., "-MXFP4", "-Q4_K_M", "-q4_k_m")
     normalized = normalized.replace(/[-_](MXFP\d|Q\d[_A-Z]*\d*[_A-Z]*)$/i, '');
-    
+
     // Standardize separator: "model:size" -> "model-size"
     normalized = normalized.replace(/:/g, '-');
-    
+
     // Remove instruct/chat suffixes for base model grouping (optional, keeps instruct for now)
     // normalized = normalized.replace(/-instruct|-chat$/i, '');
-    
+
     // Lowercase for consistent grouping
     normalized = normalized.toLowerCase();
-    
+
     return normalized;
 }
 
@@ -117,13 +120,13 @@ export function normalizeModelName(model: string): string {
 export function getDisplayModelName(model: string): string {
     // Clean up the model name for display (less aggressive than normalize)
     let display = model;
-    
+
     // Remove file extensions
     display = display.replace(/\.(gguf|bin|safetensors)$/i, '');
-    
+
     // Remove shard indicators
     display = display.replace(/-\d{5}-of-\d{5}$/i, '');
-    
+
     return display;
 }
 
@@ -314,14 +317,14 @@ export function aggregateByModelOnly(
         // Use the shortest/cleanest raw model name for display, or the normalized name
         const rawNamesArray = Array.from(rawModelNames);
         const model = getDisplayModelName(
-            rawNamesArray.reduce((shortest, name) => 
+            rawNamesArray.reduce((shortest, name) =>
                 getDisplayModelName(name).length < getDisplayModelName(shortest).length ? name : shortest
             )
         );
         // Show all providers used
         const providerArray = Array.from(providers).sort();
-        const provider = providerArray.length > 1 
-            ? providerArray.join(', ') 
+        const provider = providerArray.length > 1
+            ? providerArray.join(', ')
             : providerArray[0];
         const region = firstResult.region;
 
@@ -343,8 +346,8 @@ export function aggregateByModelOnly(
 
         // For cross-hardware view, show "Multiple" or list of devices
         const deviceTypeArray = Array.from(deviceTypes).sort();
-        const deviceName = deviceTypeArray.length > 1 
-            ? `${deviceTypeArray.length} devices` 
+        const deviceName = deviceTypeArray.length > 1
+            ? `${deviceTypeArray.length} devices`
             : getDeviceDisplayName(deviceTypeArray[0]);
 
         stats.push({

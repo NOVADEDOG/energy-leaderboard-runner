@@ -48,8 +48,8 @@ def main():
 
     args = parser.parse_args()
 
-    # Get current date for filenames
-    date_str = datetime.datetime.now().strftime("%d_%m")
+    # Get current date and time for filenames (includes time to prevent overwrites)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     sanitized_model = sanitize_model_name(args.model)
 
     # Ensure results directory exists
@@ -58,13 +58,14 @@ def main():
 
     print(f"Starting automation for model: {args.model}")
     print(f"Provider: {args.provider}")
-    print(f"Date: {date_str}")
+    print(f"Timestamp: {timestamp}")
     print("-" * 50)
 
     for test_set in TEST_SETS:
         print(f"\n>>> Running test set: {test_set}")
         
-        output_filename = f"output_{sanitized_model}_{test_set}_{date_str}.json"
+        # Include provider in filename to distinguish between backends (e.g., ollama vs llama.cpp)
+        output_filename = f"output_{sanitized_model}_{test_set}_{args.provider}_{timestamp}.json"
         output_path = results_dir / output_filename
 
         cmd = [
