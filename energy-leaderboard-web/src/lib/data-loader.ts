@@ -143,8 +143,11 @@ export function isMeasuredData(results: BenchmarkResult[]): boolean {
 
     if (hasEstimationNotice) return false;
 
-    // If we have sampling data and energy readings, consider it measured
-    return results.every(r => r.sampling_ms > 0 && r.energy_wh_raw > 0);
+    // If we have sampling data, consider it measured
+    // Note: Very fast queries may have energy_wh_raw of 0 due to measurement precision,
+    // but as long as we have sampling_ms, the measurement infrastructure was active
+    return results.every(r => r.sampling_ms > 0) && 
+           results.some(r => r.energy_wh_raw > 0);
 }
 
 /**

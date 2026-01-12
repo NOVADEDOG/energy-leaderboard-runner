@@ -1,4 +1,12 @@
 [
+  "output_gemma3_1b_easy_ollama_20260112_165131.json",
+  "output_gemma3_1b_easy_ollama_20260112_165534.json",
+  "output_gemma3_1b_hard_ollama_20260112_165131.json",
+  "output_gemma3_1b_hard_ollama_20260112_165534.json",
+  "output_gemma3_1b_medium_ollama_20260112_165131.json",
+  "output_gemma3_1b_medium_ollama_20260112_165534.json",
+  "output_gemma3_1b_mixed_ollama_20260112_165131.json",
+  "output_gemma3_1b_mixed_ollama_20260112_165534.json",
   "output_gemma3_4b_easy_02_12.json",
   "output_gemma3_4b_easy_26_11.json",
   "output_gemma3_4b_hard_02_12.json",
