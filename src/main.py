@@ -248,6 +248,7 @@ def run_test(
 
     # Initialize energy meter
     console.print("[yellow]Initializing energy meter...[/yellow]")
+    meter = None
     try:
         meter = get_platform_meter(sampling_ms=sampling_ms)
         console.print(
@@ -261,7 +262,7 @@ def run_test(
     def cleanup():
         try:
             # Attempt to stop the meter if it was initialized
-            if 'meter' in locals() and meter and hasattr(meter, 'stop'):
+            if meter and hasattr(meter, 'stop'):
                  try:
                      meter.stop()
                  except Exception:

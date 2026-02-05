@@ -183,35 +183,96 @@ class MacosMeter(EnergyMeter):
         """
         power_samples = []
 
-        # Look for patterns in cpu_power sampler output
-        # Examples: "CPU Power: 1234 mW", "Combined Power (CPU + GPU + ANE): 1234 mW"
-        patterns = [
-            r"Combined Power \(CPU \+ GPU \+ ANE\):\s+([\d.]+)\s+mW",
-            r"CPU Power:\s+([\d.]+)\s+mW",
-            r"GPU Power:\s+([\d.]+)\s+mW",
-            r"Package Power:\s+([\d.]+)\s+mW",
-        ]
+        # Regex to identify start of a sample block
+        # "*** Sampled system activity (Thu Jan  1 00:00:00 1970) (5000.00ms elapsed) ***"
+        sample_header_pattern = r"\*\*\* Sampled system activity .* \*\*\*"
+
+        # Patterns for power
+        combined_pattern = r"Combined Power \(CPU \+ GPU \+ ANE\):\s+([\d.]+)\s+mW"
+        cpu_pattern = r"CPU Power:\s+([\d.]+)\s+mW"
+        gpu_pattern = r"GPU Power:\s+([\d.]+)\s+mW"
+        package_pattern = r"Package Power:\s+([\d.]+)\s+mW"
+
+        current_block_values: Dict[str, float] = {}
+        in_block = False
 
         for line in self.output_lines:
-            # Prioritize Combined Power as it includes CPU + GPU + ANE
-            match = re.search(r"Combined Power \(CPU \+ GPU \+ ANE\):\s+([\d.]+)\s+mW", line)
-            if match:
-                try:
-                    power_mw = float(match.group(1))
-                    power_samples.append(power_mw)
-                    continue  # Found combined power, skip other patterns for this line
-                except (ValueError, IndexError):
-                    pass
+            if re.search(sample_header_pattern, line):
+                # New block found. Process previous block if exists.
+                if in_block:
+                    val = self._calculate_block_power(current_block_values)
+                    if val is not None:
+                        power_samples.append(val)
+
+                # Reset for new block
+                current_block_values = {}
+                in_block = True
+                continue
             
-            # If no combined power, try individual patterns
-            for pattern in patterns[1:]:  # Skip combined power pattern
-                match = re.search(pattern, line)
+            if in_block:
+                # Try to extract power values
+                match = re.search(combined_pattern, line)
                 if match:
                     try:
-                        power_mw = float(match.group(1))
-                        power_samples.append(power_mw)
-                        break  # Found a match, move to next line
-                    except (ValueError, IndexError):
+                        current_block_values['combined'] = float(match.group(1))
                         continue
+                    except (ValueError, IndexError):
+                        pass
+
+                match = re.search(cpu_pattern, line)
+                if match:
+                    try:
+                        current_block_values['cpu'] = float(match.group(1))
+                        continue
+                    except (ValueError, IndexError):
+                        pass
+
+                match = re.search(gpu_pattern, line)
+                if match:
+                    try:
+                        current_block_values['gpu'] = float(match.group(1))
+                        continue
+                    except (ValueError, IndexError):
+                        pass
+
+                match = re.search(package_pattern, line)
+                if match:
+                    try:
+                        current_block_values['package'] = float(match.group(1))
+                        continue
+                    except (ValueError, IndexError):
+                        pass
+
+        # Process the last block
+        if in_block:
+            val = self._calculate_block_power(current_block_values)
+            if val is not None:
+                power_samples.append(val)
 
         return power_samples
+
+    def _calculate_block_power(self, values: Dict[str, float]) -> Optional[float]:
+        """Calculate total power from a block of parsed values."""
+        if 'combined' in values:
+            return values['combined']
+
+        # If we have Package Power, it usually covers CPU (and maybe GPU/system)
+        # But prefer summing specific components if known, or fallback to Package if it's the only thing.
+        # Actually, Combined is best. If not, CPU + GPU is usually what we want.
+
+        total = 0.0
+        found = False
+        if 'cpu' in values:
+            total += values['cpu']
+            found = True
+        if 'gpu' in values:
+            total += values['gpu']
+            found = True
+
+        if found:
+            return total
+
+        if 'package' in values:
+            return values['package']
+
+        return None

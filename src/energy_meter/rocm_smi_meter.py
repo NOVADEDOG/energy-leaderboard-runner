@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import threading
 import time
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from .base import EnergyMeter
 
@@ -30,7 +30,7 @@ class RocmSmiMeter(EnergyMeter):
         self.sampling_ms = sampling_ms
         self.device_index = device_index
         self.thread: Optional[threading.Thread] = None
-        self.power_samples: List[float] = []
+        self.power_samples: List[Tuple[float, float]] = []
         self.start_time: float = 0.0
         self.stop_time: float = 0.0
         self._running: bool = False
@@ -84,7 +84,7 @@ class RocmSmiMeter(EnergyMeter):
                 if result.returncode == 0:
                     power_watts = self._parse_power(result.stdout)
                     if power_watts is not None:
-                        self.power_samples.append(power_watts)
+                        self.power_samples.append((time.time(), power_watts))
 
             except (subprocess.TimeoutExpired, Exception):
                 # If we can't read power, skip this sample
@@ -141,22 +141,32 @@ class RocmSmiMeter(EnergyMeter):
 
         # Calculate energy using trapezoidal integration
         if len(self.power_samples) < 2:
-            return {
-                "energy_wh_raw": 0.0,
-                "duration_s": duration_s,
-                "sampling_ms": self.sampling_ms,
-            }
+            if len(self.power_samples) == 1:
+                # Use the single sample as average power
+                _, power_watts = self.power_samples[0]
+                energy_wh = power_watts * (duration_s / 3600.0)
+                return {
+                    "energy_wh_raw": energy_wh,
+                    "duration_s": duration_s,
+                    "sampling_ms": self.sampling_ms,
+                }
+            else:
+                return {
+                    "energy_wh_raw": 0.0,
+                    "duration_s": duration_s,
+                    "sampling_ms": self.sampling_ms,
+                }
 
-        # Power is already in watts
-        power_watts = self.power_samples
-
-        # Time between samples in hours
-        dt_hours = (self.sampling_ms / 1000.0) / 3600.0
-
-        # Trapezoidal integration
+        # Trapezoidal integration using actual timestamps
         energy_wh = 0.0
-        for i in range(len(power_watts) - 1):
-            avg_power = (power_watts[i] + power_watts[i + 1]) / 2.0
+        for i in range(len(self.power_samples) - 1):
+            t1, p1_watts = self.power_samples[i]
+            t2, p2_watts = self.power_samples[i+1]
+
+            # Time difference in hours
+            dt_hours = (t2 - t1) / 3600.0
+
+            avg_power = (p1_watts + p2_watts) / 2.0
             energy_wh += avg_power * dt_hours
 
         return {
