@@ -4,7 +4,7 @@ import glob
 import os
 import time
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from .base import EnergyMeter
 
@@ -26,8 +26,8 @@ class RaplMeter(EnergyMeter):
             sampling_ms: Sampling interval (not used for RAPL, but kept for consistency).
         """
         self.sampling_ms = sampling_ms
-        self.rapl_path: Optional[Path] = None
-        self.start_energy_uj: float = 0.0
+        self.rapl_paths: List[Path] = []
+        self.start_energy_uj: Dict[Path, float] = {}
         self.start_time: float = 0.0
         self.stop_time: float = 0.0
 
@@ -43,17 +43,24 @@ class RaplMeter(EnergyMeter):
         if not rapl_base.exists():
             return False
 
-        # Find RAPL zones
+        # Find all RAPL zones
         rapl_zones = list(rapl_base.glob("intel-rapl:*"))
+        self.rapl_paths = []
 
-        # Check if any zone has an energy_uj file
         for zone in rapl_zones:
+            name_file = zone / "name"
             energy_file = zone / "energy_uj"
-            if energy_file.exists():
-                self.rapl_path = zone
-                return True
 
-        return False
+            if name_file.exists() and energy_file.exists():
+                try:
+                    name = name_file.read_text().strip()
+                    # Only collect from package zones to avoid double counting cores
+                    if "package" in name:
+                        self.rapl_paths.append(zone)
+                except Exception:
+                    continue
+
+        return len(self.rapl_paths) > 0
 
     def start(self) -> None:
         """
@@ -70,8 +77,8 @@ class RaplMeter(EnergyMeter):
             )
 
         # Check permissions explicitly
-        if self.rapl_path:
-            energy_file = self.rapl_path / "energy_uj"
+        for path in self.rapl_paths:
+            energy_file = path / "energy_uj"
             if not os.access(energy_file, os.R_OK):
                 raise PermissionError(
                     f"Permission denied reading {energy_file}. "
@@ -79,11 +86,13 @@ class RaplMeter(EnergyMeter):
                 )
 
         self.start_time = time.time()
+        self.start_energy_uj = {}
 
-        # Read initial energy value
-        self.start_energy_uj = self._read_energy_uj()
+        # Read initial energy value for all zones
+        for path in self.rapl_paths:
+            self.start_energy_uj[path] = self._read_energy_uj(path)
 
-    def _read_energy_uj(self) -> float:
+    def _read_energy_uj(self, path: Path) -> float:
         """
         Read the current energy counter value in microjoules.
 
@@ -93,17 +102,14 @@ class RaplMeter(EnergyMeter):
         Raises:
             RuntimeError: If reading fails.
         """
-        if self.rapl_path is None:
-            raise RuntimeError("RAPL path not initialized")
-
-        energy_file = self.rapl_path / "energy_uj"
+        energy_file = path / "energy_uj"
 
         try:
             with open(energy_file, "r") as f:
                 energy_uj_str = f.read().strip()
                 return float(energy_uj_str)
         except Exception as e:
-            raise RuntimeError(f"Failed to read RAPL energy counter: {e}")
+            raise RuntimeError(f"Failed to read RAPL energy counter at {path}: {e}")
 
     def stop(self) -> Dict[str, float]:
         """
@@ -119,28 +125,32 @@ class RaplMeter(EnergyMeter):
             RuntimeError: If reading the energy counter fails.
         """
         self.stop_time = time.time()
-
-        # Read final energy value
-        stop_energy_uj = self._read_energy_uj()
-
         duration_s = self.stop_time - self.start_time
 
-        # Calculate energy difference in microjoules
-        energy_diff_uj = stop_energy_uj - self.start_energy_uj
+        total_energy_wh = 0.0
 
-        # Handle counter wrap-around (RAPL counters can overflow)
-        # Typical RAPL counter max is around 2^32 microjoules
-        if energy_diff_uj < 0:
-            # Assume counter wrapped once
-            max_counter = 2**32
-            energy_diff_uj += max_counter
+        for path in self.rapl_paths:
+            # Read final energy value
+            stop_energy_uj = self._read_energy_uj(path)
+            start_energy_uj = self.start_energy_uj.get(path, 0.0)
 
-        # Convert microjoules to watt-hours
-        # 1 Wh = 3,600,000,000 microjoules
-        energy_wh = energy_diff_uj / 3_600_000_000.0
+            # Calculate energy difference in microjoules
+            energy_diff_uj = stop_energy_uj - start_energy_uj
+
+            # Handle counter wrap-around (RAPL counters can overflow)
+            # Typical RAPL counter max is around 2^32 microjoules
+            if energy_diff_uj < 0:
+                # Assume counter wrapped once
+                max_counter = 2**32
+                energy_diff_uj += max_counter
+
+            # Convert microjoules to watt-hours
+            # 1 Wh = 3,600,000,000 microjoules
+            energy_wh = energy_diff_uj / 3_600_000_000.0
+            total_energy_wh += energy_wh
 
         return {
-            "energy_wh_raw": energy_wh,
+            "energy_wh_raw": total_energy_wh,
             "duration_s": duration_s,
             "sampling_ms": self.sampling_ms,
         }
